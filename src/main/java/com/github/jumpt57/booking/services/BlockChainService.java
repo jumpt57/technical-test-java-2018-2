@@ -9,6 +9,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -28,6 +30,7 @@ public class BlockChainService {
 
     /**
      * Sorted from newer to oldest
+     *
      * @return
      */
     public Collection<Block> getBlockChain() {
@@ -64,5 +67,26 @@ public class BlockChainService {
         return lastBlock.isPresent() ? lastBlock.get().getHash() : "0";
     }
 
+    public Boolean isChainValid() {
+        final List<Block> blockchain = new ArrayList<>(BlockChainInstance.get());
+
+        Block currentBlock;
+        Block previousBlock;
+
+        for (int i = 1; i < blockchain.size(); i++) {
+            currentBlock = blockchain.get(i);
+            previousBlock = blockchain.get(i - 1);
+
+            //compare registered hash and calculated hash:
+            if (!currentBlock.getHash().equals(currentBlock.calculateHash())) {
+                return false;
+            }
+            //compare previous hash and registered previous hash
+            if (!previousBlock.getHash().equals(currentBlock.getPreviousHash())) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 }

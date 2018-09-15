@@ -23,4 +23,9 @@ public class BlockChainController {
         return ResponseEntity.ok(blockChainService.getBlockChain());
     }
 
+    @GetMapping("/validate")
+    public ResponseEntity<Boolean> validate() {
+        return ResponseEntity.ok(blockChainService.isChainValid());
+    }
+
 }
